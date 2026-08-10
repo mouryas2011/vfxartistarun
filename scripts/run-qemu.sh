@@ -58,7 +58,7 @@ fi
 echo "UEFI firmware: $OVMF"
 
 COMMON=(
-  -machine q35,accel=tcg
+  -machine 'q35,accel=tcg'
   -cpu "$CPU"
   -m "$RAM"
   -smp 2
