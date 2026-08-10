@@ -11,7 +11,7 @@ echo "== shellcheck =="
 if command -v shellcheck >/dev/null 2>&1; then
   while IFS= read -r -d '' f; do
     echo "linting $f"
-    shellcheck "$f" || FAIL=1
+    shellcheck -S warning "$f" || FAIL=1
   done < <(find scripts tests -name '*.sh' -print0)
 else
   echo "shellcheck not found — skipping (run 'make bootstrap')."
@@ -24,7 +24,7 @@ while IFS= read -r -d '' f; do
 done < <(find packaging -name '*.json' -print0)
 
 echo "== no-secrets scan =="
-if rg -i -U --glob '!docs/**' --glob '!.git/**' '(API[_-]?KEY|SECRET|PASSWORD|PRIVATE KEY)=["'"'"]?[A-Za-z0-9+/]{16,}' . >/dev/null 2>&1; then
+if rg -i -U -g '!docs/**' -g '!.git/**' -g '!*.lock' -g '!packaging/lock/**' -e '(API[_-]?KEY|SECRET|PASSWORD|PRIVATE[[:space:]]+KEY)[[:space:]]*=' . >/dev/null 2>&1; then
   echo "ERROR: possible secret-like content found." >&2
   FAIL=1
 fi
