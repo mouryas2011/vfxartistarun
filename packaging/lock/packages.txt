@@ -1,0 +1,12 @@
+# Packages installed inside the NEXORA development rootfs (Phase 1).
+# Names are Debian package names.
+linux-image-amd64
+initramfs-tools
+live-boot
+systemd-sysv
+udev
+kmod
+procps
+ifupdown
+isc-dhcp-client
+openssh-server

@@ -1,0 +1,16 @@
+# Build artifacts
+build/
+*.iso
+*.log
+
+# Python
+__pycache__/
+*.pyc
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Tooling
+.vscode/
+.idea/
