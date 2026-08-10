@@ -31,7 +31,7 @@ fi
 if command -v apt-get >/dev/null 2>&1; then
   echo "Installing via apt: ${MISSING[*]}"
   sudo apt-get update
-  # shellcheck disable=SC2086
+  # shellcheck disable=SC2086,SC2048
   sudo apt-get install -y ${MISSING[*]}
 else
   echo "Missing tools: ${MISSING[*]}" >&2
