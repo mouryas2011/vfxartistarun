@@ -56,7 +56,7 @@ echo "== [3/6] install minimal packages =="
 $SUDO chroot "$CHROOT" /bin/bash -euxc '
 export DEBIAN_FRONTEND=noninteractive
 apt-get update
-mapfile -t PKGS < <(grep -vE '^[[:space:]]*(#|$)' /tmp/packages.txt)
+mapfile -t PKGS < <(grep -vE "^[[:space:]]*(#|\$)" /tmp/packages.txt)
 apt-get install -y --no-install-recommends "${PKGS[@]}"
 apt-get clean
 rm -rf /var/lib/apt/lists/*
