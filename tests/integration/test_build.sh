@@ -25,11 +25,11 @@ check "build metadata present and valid JSON" \
   'python3 -c "import json,sys;m=json.load(open(\"$BUILD_DIR/build-metadata.json\"));assert m[\"version\"]"'
 
 check "ISO contains GRUB EFI boot files" \
-  'xorriso -osirrox on -indev "$ISO" -find /boot/grub -name "*.cfg" -print >/dev/null 2>&1'
+  'xorriso -indev "$ISO" -find /boot/grub -name "*.cfg" -print >/dev/null 2>&1'
 
 check "ISO contains kernel + initrd" \
-  'xorriso -osirrox on -indev "$ISO" -find / -name "vmlinuz*" -print 2>/dev/null | grep -q vmlinuz \
-   && xorriso -osirrox on -indev "$ISO" -find / -name "initrd*" -print 2>/dev/null | grep -q initrd'
+  'xorriso -indev "$ISO" -find / -name "vmlinuz*" -print 2>/dev/null | grep -q vmlinuz \
+   && xorriso -indev "$ISO" -find / -name "initrd*" -print 2>/dev/null | grep -q initrd'
 
 check "metadata records a version" 'grep -q "\"version\"" "$BUILD_DIR/build-metadata.json"'
 
