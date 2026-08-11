@@ -49,7 +49,9 @@ $SUDO cp "$ROOT/packaging/lock/packages.txt" "$CHROOT/tmp/packages.txt"
 for d in /proc /sys /dev; do
   $SUDO mount --bind "$d" "$CHROOT$d"
 done
-trap 'for d in /proc /sys /dev; do $SUDO umount "$CHROOT$d" 2>/dev/null || true; done' EXIT
+$SUDO mkdir -p "$CHROOT/dev/pts"
+$SUDO mount -t devpts devpts "$CHROOT/dev/pts"
+trap 'for m in dev/pts dev sys proc; do $SUDO umount "$CHROOT/$m" 2>/dev/null || true; done' EXIT
 
 echo "== [3/6] install minimal packages =="
 # shellcheck disable=SC2024
