@@ -118,7 +118,11 @@ menuentry "NEXORA OS $VERSION (development)" {
 }
 EOF
 $SUDO grub-mkrescue --output="$ISO" "$STAGE" 2>/dev/null
-$SUDO chown -R "$(id -un):$(id -gn)" "$BUILD_DIR"
+$SUDO umount "$CHROOT/dev/pts" 2>/dev/null || true
+$SUDO umount "$CHROOT/dev" 2>/dev/null || true
+$SUDO umount "$CHROOT/sys" 2>/dev/null || true
+$SUDO umount "$CHROOT/proc" 2>/dev/null || true
+$SUDO chown -R "$(id -un):$(id -gn)" "$BUILD_DIR/stage" "$ISO"
 
 (
   cd "$BUILD_DIR"
