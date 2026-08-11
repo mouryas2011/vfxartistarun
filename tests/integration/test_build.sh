@@ -24,6 +24,9 @@ check "SHA256 checksum matches" 'cd "$BUILD_DIR" && sha256sum -c "nexora-$VERSIO
 check "build metadata present and valid JSON" \
   'python3 -c "import json,sys;m=json.load(open(\"$BUILD_DIR/build-metadata.json\"));assert m[\"version\"]"'
 
+echo "DEBUG: ISO file listing:"
+xorriso -indev "$ISO" -find / -print 2>&1 | head -50 || true
+
 check "ISO contains GRUB EFI boot files" \
   'xorriso -indev "$ISO" -find /boot/grub -name "*.cfg" -print >/dev/null 2>&1'
 
