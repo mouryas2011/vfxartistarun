@@ -70,7 +70,8 @@ jobs:
           sudo apt-get install -y qemu-system-x86 ovmf
       - name: Build ISO (shared with build job for isolation)
         run: |
-          sudo apt-get install -y debootstrap xorriso
+          sudo apt-get install -y debootstrap xorriso \
+            squashfs-tools dosfstools mtools
           make build
         shell: bash
       - name: QEMU UEFI boot test (headless, serial log, gate)
