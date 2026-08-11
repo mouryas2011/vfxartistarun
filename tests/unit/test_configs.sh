@@ -48,7 +48,7 @@ check "build dir absent from version control" \
   '! grep -qx "build/" .gitignore 2>/dev/null || true; grep -qx "build/" .gitignore'
 
 check "lockfiles are JSON-valid where applicable" \
-  'for f in packaging/lock/*.json; do python3 -c "import json,sys;json.load(open(sys.argv[1]))" "$f"; done 2>/dev/null'
+  'shopt -s nullglob; for f in packaging/lock/*.json; do python3 -c "import json,sys;json.load(open(sys.argv[1]))" "$f" || exit 1; done'
 
 echo "UNIT: $PASS passed, $FAIL failed"
 [[ $FAIL -eq 0 ]]
