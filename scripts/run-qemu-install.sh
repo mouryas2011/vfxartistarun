@@ -103,6 +103,10 @@ for _ in $(seq 1 "$TIMEOUT"); do
 done
 kill "$QPID" 2>/dev/null || true
 wait "$QPID" 2>/dev/null || true
+# the VM powers off immediately after the marker, so re-check the full log
+if [[ $GATE_INSTALL -eq 0 ]] && grep -q "NEXORA INSTALL OK" "$INSTALL_LOG" 2>/dev/null; then
+  GATE_INSTALL=1
+fi
 
 echo "---- install log tail ----"
 tail -n 20 "$INSTALL_LOG" 2>/dev/null || true
@@ -140,6 +144,10 @@ for _ in $(seq 1 "$TIMEOUT"); do
 done
 kill "$QPID" 2>/dev/null || true
 wait "$QPID" 2>/dev/null || true
+# the guest may power itself off after the marker; re-check the full log
+if [[ $GATE_BOOT -eq 0 ]] && grep -q "NEXORA_BOOT_MARKER" "$BOOT_LOG" 2>/dev/null; then
+  GATE_BOOT=1
+fi
 
 echo "---- installed-boot log tail ----"
 tail -n 25 "$BOOT_LOG" 2>/dev/null || true
