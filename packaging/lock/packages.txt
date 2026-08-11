@@ -10,3 +10,8 @@ procps
 ifupdown
 isc-dhcp-client
 openssh-server
+# Installer runtime tools (Phase 2): partition, format, unpack, bootloader.
+parted
+dosfstools
+squashfs-tools
+grub-efi-amd64

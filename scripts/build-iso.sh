@@ -101,7 +101,33 @@ echo nexora > /etc/hostname
 printf "NEXORA dev image %s\n" "$VERSION" > /etc/nexora-version
 '
 
+echo "== [4b/6] ship installer + auto-install service =="
+$SUDO cp "$ROOT/scripts/install-system.sh" "$CHROOT/usr/sbin/nexora-install.sh"
+$SUDO chmod 755 "$CHROOT/usr/sbin/nexora-install.sh"
+
+$SUDO tee "$CHROOT/etc/systemd/system/nexora-install.service" >/dev/null <<'EOF'
+[Unit]
+Description=NEXORA auto-install (triggered by nexora.install= kernel cmdline)
+DefaultDependencies=no
+After=systemd-udev-settle.service
+ConditionKernelCommandLine=nexora.install
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/nexora-install.sh
+TimeoutStopSec=600
+[Install]
+WantedBy=sysinit.target
+EOF
+
+$SUDO chroot "$CHROOT" /bin/bash -euxc 'systemctl enable nexora-install.service'
+
 echo "== [5/6] build initramfs and copy kernel =="
+# QEMU CI uses virtio-blk; ensure the drivers are present in the initramfs
+# (initramfs-tools in a chroot cannot detect them from the host hardware).
+$SUDO tee "$CHROOT/etc/initramfs-tools/modules" >/dev/null <<'EOF'
+virtio_pci
+virtio_blk
+EOF
 $SUDO chroot "$CHROOT" /bin/bash -euxc 'update-initramfs -u -k all'
 $SUDO mkdir -p "$STAGE/live"
 $SUDO cp "$CHROOT/boot/vmlinuz-"* "$STAGE/live/vmlinuz"

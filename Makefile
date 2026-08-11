@@ -7,7 +7,7 @@ ISO := $(BUILD_DIR)/$(ISO_NAME)
 export VERSION
 export BUILD_DIR
 
-.PHONY: help bootstrap lint unit build integration test qemu qemu-serial release-notes clean
+.PHONY: help bootstrap lint unit build integration test qemu qemu-serial qemu-install install release-notes clean
 
 help:
 	@echo "NEXORA build targets"
@@ -44,6 +44,11 @@ qemu: build
 
 qemu-serial: build
 	./scripts/run-qemu.sh --iso $(ISO) --headless --timeout 420
+
+qemu-install: build
+	./scripts/run-qemu-install.sh --iso $(ISO)
+
+install: qemu-install
 
 clean:
 	rm -rf $(BUILD_DIR)

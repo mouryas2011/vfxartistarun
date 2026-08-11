@@ -84,3 +84,33 @@ jobs:
           name: qemu-serial-log
           path: build/qemu-serial.log
         if: always()
+
+  install-gate:
+    name: Installer gate (install + reboot into installed system)
+    runs-on: ubuntu-24.04
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install build + QEMU tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            make bash python3 \
+            debootstrap xorriso \
+            squashfs-tools dosfstools mtools \
+            qemu-system-x86 ovmf qemu-utils
+      - name: Build ISO
+        run: make build
+        shell: bash
+      - name: Install to scratch disk and boot installed system (UEFI)
+        run: make qemu-install
+        shell: bash
+      - name: Upload install logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: install-gate-logs
+          path: |
+            build/qemu-install.log
+            build/qemu-installed-boot.log
+          if-no-files-found: warn
+        if: always()
