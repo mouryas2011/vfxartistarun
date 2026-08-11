@@ -42,27 +42,44 @@ fi
 command -v qemu-system-x86_64 >/dev/null || { echo "qemu-system-x86_64 missing (make bootstrap)" >&2; exit 1; }
 [[ -f "$ISO" ]] || { echo "ISO not found: $ISO (run 'make build')" >&2; exit 1; }
 
-OVMF=""
-for f in \
-  /usr/share/OVMF/OVMF_CODE.fd \
+OVMF_CODE=""
+OVMF_VARS=""
+for code in \
   /usr/share/OVMF/OVMF_CODE_4M.fd \
-  /usr/share/ovmf/OVMF_CODE.fd \
+  /usr/share/OVMF/OVMF_CODE.fd \
   /usr/share/ovmf/OVMF_CODE_4M.fd \
-  /usr/share/qemu/OVMF_CODE.fd; do
-  if [[ -f "$f" ]]; then OVMF="$f"; break; fi
+  /usr/share/ovmf/OVMF_CODE.fd; do
+  if [[ -f "$code" ]]; then OVMF_CODE="$code"; break; fi
 done
-if [[ -z "$OVMF" ]]; then
+for vars in \
+  /usr/share/OVMF/OVMF_VARS_4M.fd \
+  /usr/share/OVMF/OVMF_VARS.fd \
+  /usr/share/ovmf/OVMF_VARS_4M.fd \
+  /usr/share/ovmf/OVMF_VARS.fd; do
+  if [[ -f "$vars" ]]; then OVMF_VARS="$vars"; break; fi
+done
+if [[ -z "$OVMF_CODE" ]]; then
   echo "ERROR: OVMF (UEFI firmware) not found. Install the 'ovmf' package." >&2
   exit 1
 fi
-echo "UEFI firmware: $OVMF"
+if [[ -z "$OVMF_VARS" ]]; then
+  echo "ERROR: OVMF_VARS not found next to $OVMF_CODE. Install the 'ovmf' package." >&2
+  exit 1
+fi
+
+# OVMF is UEFI firmware: load it via pflash, not -bios. VARS must be writable.
+PFLASH_VARS="$ROOT/build/qemu-OVMF_VARS.fd"
+cp "$OVMF_VARS" "$PFLASH_VARS"
+chmod 644 "$PFLASH_VARS"
+echo "UEFI firmware: $OVMF_CODE"
 
 COMMON=(
   -machine 'q35,accel=tcg'
   -cpu "$CPU"
   -m "$RAM"
   -smp 2
-  -bios "$OVMF"
+  -drive "if=pflash,format=raw,readonly=on,file=$OVMF_CODE"
+  -drive "if=pflash,format=raw,file=$PFLASH_VARS"
   -cdrom "$ISO"
   -boot order=d
 )
