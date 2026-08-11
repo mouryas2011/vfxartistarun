@@ -6,6 +6,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 VERSION="${VERSION:-0.1}"
 BUILD_DIR="${BUILD_DIR:-$ROOT/build}"
+BUILD_DIR="$(cd "$BUILD_DIR" && pwd)"
 ISO="$BUILD_DIR/nexora-$VERSION.iso"
 PASS=0
 FAIL=0
