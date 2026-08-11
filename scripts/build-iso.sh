@@ -122,7 +122,7 @@ $SUDO umount "$CHROOT/dev/pts" 2>/dev/null || true
 $SUDO umount "$CHROOT/dev" 2>/dev/null || true
 $SUDO umount "$CHROOT/sys" 2>/dev/null || true
 $SUDO umount "$CHROOT/proc" 2>/dev/null || true
-$SUDO chown -R "$(id -un):$(id -gn)" "$BUILD_DIR/stage" "$ISO"
+$SUDO chown -R "$(id -un):$(id -gn)" "$BUILD_DIR"
 
 (
   cd "$BUILD_DIR"
