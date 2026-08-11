@@ -36,7 +36,10 @@ check "debian release is in supported set ($RELEASE_SUPPORTED)" \
   'grep -qx "$RELEASE_SUPPORTED" packaging/lock/debian-release.txt'
 
 check "scripts exist" \
-  '[[ -x scripts/build-iso.sh && -x scripts/run-qemu.sh && -x scripts/bootstrap.sh && -x scripts/lint.sh && -x scripts/install-system.sh && -x scripts/run-qemu-install.sh ]]'
+  '[[ -x scripts/build-iso.sh && -x scripts/run-qemu.sh && -x scripts/bootstrap.sh && -x scripts/lint.sh && -x scripts/install-system.sh && -x scripts/run-qemu-install.sh && -x scripts/run-qemu-graphical.sh ]]'
+
+check "graphical foundation sources exist" \
+  '[[ -f desktop/compositor/nexora-pixel-client.c && -f desktop/compositor/nexora-graphical.sh ]]'
 
 check "core structure dirs exist (sample, §75)" \
   'for d in kernel boot hal core semantic desktop mobile apps ai compatibility virtualization package-manager store installer recovery updates; do [[ -d $d ]] || exit 1; done'

@@ -15,3 +15,10 @@ parted
 dosfstools
 squashfs-tools
 grub-efi-amd64
+# Graphical foundation (Phase 2): Wayland compositor + tools.
+weston
+wayland-utils
+libwayland-dev
+# Compile the NEXORA Wayland pixel client during the image build.
+gcc
+libc6-dev

@@ -34,5 +34,10 @@ check "ISO contains kernel + initrd + live filesystem" \
 
 check "metadata records a version" 'grep -q "\"version\"" "$BUILD_DIR/build-metadata.json"'
 
+check "squashfs contains Wayland graphical session (Phase 2)" \
+  'unsquashfs -ls "$BUILD_DIR/stage/live/filesystem.squashfs" 2>/dev/null | grep -q "usr/sbin/nexora-graphical.sh" \
+   && unsquashfs -ls "$BUILD_DIR/stage/live/filesystem.squashfs" 2>/dev/null | grep -q "usr/libexec/nexora/nexora-pixel-client" \
+   && unsquashfs -ls "$BUILD_DIR/stage/live/filesystem.squashfs" 2>/dev/null | grep -q "etc/systemd/system/nexora-graphical.service"'
+
 echo "INTEGRATION: $PASS passed, $FAIL failed"
 [[ $FAIL -eq 0 ]]

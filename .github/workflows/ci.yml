@@ -114,3 +114,34 @@ jobs:
             build/qemu-installed-boot.log
           if-no-files-found: warn
         if: always()
+
+  graphical-gate:
+    name: Graphical gate (Wayland compositor renders pixels)
+    runs-on: ubuntu-24.04
+    needs: build
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install build + QEMU + GL tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            make bash python3 \
+            debootstrap xorriso \
+            squashfs-tools dosfstools mtools \
+            qemu-system-x86 ovmf qemu-utils \
+            libegl1 libegl1-mesa libgl1 libgl1-mesa-dri libgbm1
+      - name: Build ISO
+        run: make build
+        shell: bash
+      - name: Graphical gate (boot with virtio-gpu, verify rendered pixels)
+        run: make qemu-graphical
+        shell: bash
+      - name: Upload graphical gate artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: graphical-gate-artifacts
+          path: |
+            build/qemu-graphical.log
+            build/nexora-graphical-screen.ppm
+          if-no-files-found: warn
+        if: always()

@@ -7,7 +7,7 @@ ISO := $(BUILD_DIR)/$(ISO_NAME)
 export VERSION
 export BUILD_DIR
 
-.PHONY: help bootstrap lint unit build integration test qemu qemu-serial qemu-install install release-notes clean
+.PHONY: help bootstrap lint unit build integration test qemu qemu-serial qemu-install qemu-graphical install release-notes clean
 
 help:
 	@echo "NEXORA build targets"
@@ -19,6 +19,8 @@ help:
 	@echo "  make test         lint + unit + integration"
 	@echo "  make qemu         boot the ISO in QEMU under UEFI (interactive)"
 	@echo "  make qemu-serial  headless UEFI boot, write serial log to $(BUILD_DIR)"
+	@echo "  make qemu-install install the ISO to a scratch disk and boot the installed system"
+	@echo "  make qemu-graphical graphical gate: boot with a virtual GPU, verify rendered pixels"
 	@echo "  make clean        remove $(BUILD_DIR)"
 
 bootstrap:
@@ -49,6 +51,9 @@ qemu-install: build
 	./scripts/run-qemu-install.sh --iso $(ISO)
 
 install: qemu-install
+
+qemu-graphical: build
+	./scripts/run-qemu-graphical.sh --iso $(ISO)
 
 clean:
 	rm -rf $(BUILD_DIR)

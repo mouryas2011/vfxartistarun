@@ -66,6 +66,18 @@ rm -rf /var/lib/apt/lists/*
 rm -f /tmp/packages.txt
 '
 
+echo "== [3b/6] build NEXORA Wayland pixel client =="
+$SUDO cp "$ROOT/desktop/compositor/nexora-pixel-client.c" "$CHROOT/tmp/"
+# shellcheck disable=SC2024
+$SUDO chroot "$CHROOT" /bin/bash -euxc '
+set -e
+mkdir -p /usr/libexec/nexora
+cd /tmp
+wayland-scanner client-header /usr/share/wayland/wayland.xml /tmp/wayland-protocol.h
+gcc -O2 -Wall -I/tmp -o /usr/libexec/nexora/nexora-pixel-client /tmp/nexora-pixel-client.c -lwayland-client
+rm -f /tmp/nexora-pixel-client.c /tmp/wayland-protocol.h
+'
+
 echo "== [4/6] NEXORA identification + boot marker =="
 $SUDO hostname nexora
 $SUDO tee "$CHROOT/etc/os-release" >/dev/null <<EOF
@@ -121,12 +133,33 @@ EOF
 
 $SUDO chroot "$CHROOT" /bin/bash -euxc 'systemctl enable nexora-install.service'
 
+echo "== [4c/6] NEXORA Wayland graphical session (Phase 2) =="
+$SUDO cp "$ROOT/desktop/compositor/nexora-graphical.sh" "$CHROOT/usr/sbin/nexora-graphical.sh"
+$SUDO chmod 755 "$CHROOT/usr/sbin/nexora-graphical.sh"
+
+$SUDO tee "$CHROOT/etc/systemd/system/nexora-graphical.service" >/dev/null <<'EOF'
+[Unit]
+Description=NEXORA Wayland graphical session
+After=systemd-udev-settle.service systemd-user-sessions.service
+Wants=systemd-user-sessions.service
+[Service]
+Type=simple
+ExecStart=/usr/sbin/nexora-graphical.sh
+Restart=on-failure
+RestartSec=5
+[Install]
+WantedBy=multi-user.target
+EOF
+
+$SUDO chroot "$CHROOT" /bin/bash -euxc 'systemctl enable nexora-graphical.service'
+
 echo "== [5/6] build initramfs and copy kernel =="
-# QEMU CI uses virtio-blk; ensure the drivers are present in the initramfs
+# QEMU CI uses virtio devices; ensure the drivers are present in the initramfs
 # (initramfs-tools in a chroot cannot detect them from the host hardware).
 $SUDO tee "$CHROOT/etc/initramfs-tools/modules" >/dev/null <<'EOF'
 virtio_pci
 virtio_blk
+virtio_gpu
 EOF
 $SUDO chroot "$CHROOT" /bin/bash -euxc 'update-initramfs -u -k all'
 $SUDO mkdir -p "$STAGE/live"
