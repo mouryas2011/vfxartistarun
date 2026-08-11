@@ -51,6 +51,7 @@ for d in /proc /sys /dev; do
 done
 $SUDO mkdir -p "$CHROOT/dev/pts"
 $SUDO mount -t devpts devpts "$CHROOT/dev/pts"
+# shellcheck disable=SC2154
 trap 'for m in dev/pts dev sys proc; do "$SUDO" umount "$CHROOT/$m" 2>/dev/null || true; done' EXIT
 
 echo "== [3/6] install minimal packages =="
