@@ -103,25 +103,31 @@ printf "NEXORA dev image %s\n" "$VERSION" > /etc/nexora-version
 
 echo "== [5/6] build initramfs and copy kernel =="
 $SUDO chroot "$CHROOT" /bin/bash -euxc 'update-initramfs -u -k all'
-$SUDO cp "$CHROOT/boot/vmlinuz-"* "$STAGE/vmlinuz"
-$SUDO cp "$CHROOT/boot/initrd.img-"* "$STAGE/initrd.img"
-$SUDO chmod 644 "$STAGE/vmlinuz" "$STAGE/initrd.img"
+$SUDO mkdir -p "$STAGE/live"
+$SUDO cp "$CHROOT/boot/vmlinuz-"* "$STAGE/live/vmlinuz"
+$SUDO cp "$CHROOT/boot/initrd.img-"* "$STAGE/live/initrd.img"
+$SUDO chmod 644 "$STAGE/live/vmlinuz" "$STAGE/live/initrd.img"
 
-echo "== [6/6] grub-mkrescue (UEFI ISO) =="
+echo "== [6/6] create live filesystem + grub-mkrescue (UEFI ISO) =="
+$SUDO umount "$CHROOT/dev/pts" 2>/dev/null || true
+$SUDO umount "$CHROOT/dev" 2>/dev/null || true
+$SUDO umount "$CHROOT/sys" 2>/dev/null || true
+$SUDO umount "$CHROOT/proc" 2>/dev/null || true
+echo "== [6/6a] build /live/filesystem.squashfs =="
+$SUDO mksquashfs "$CHROOT" "$STAGE/live/filesystem.squashfs" -noappend -comp xz
+$SUDO chmod 644 "$STAGE/live/filesystem.squashfs"
+
+echo "== [6/6b] grub.cfg =="
 $SUDO mkdir -p "$STAGE/boot/grub"
 $SUDO tee "$STAGE/boot/grub/grub.cfg" >/dev/null <<EOF
 set timeout=5
 set default=0
 menuentry "NEXORA OS $VERSION (development)" {
-  linux /vmlinuz boot=live quiet console=ttyS0,115200 console=tty0
-  initrd /initrd.img
+  linux /live/vmlinuz boot=live console=ttyS0,115200 console=tty0
+  initrd /live/initrd.img
 }
 EOF
 $SUDO grub-mkrescue --output="$ISO" "$STAGE" 2>/dev/null
-$SUDO umount "$CHROOT/dev/pts" 2>/dev/null || true
-$SUDO umount "$CHROOT/dev" 2>/dev/null || true
-$SUDO umount "$CHROOT/sys" 2>/dev/null || true
-$SUDO umount "$CHROOT/proc" 2>/dev/null || true
 $SUDO chown -R "$(id -un):$(id -gn)" "$BUILD_DIR"
 
 (

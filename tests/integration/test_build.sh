@@ -27,9 +27,10 @@ check "build metadata present and valid JSON" \
 check "ISO contains GRUB EFI boot files" \
   'xorriso -indev "$ISO" -ls /boot/grub 2>/dev/null | grep -q "grub.cfg"'
 
-check "ISO contains kernel + initrd" \
-  'xorriso -indev "$ISO" -ls / 2>/dev/null | grep -q "vmlinuz" \
-   && xorriso -indev "$ISO" -ls / 2>/dev/null | grep -q "initrd"'
+check "ISO contains kernel + initrd + live filesystem" \
+  'xorriso -indev "$ISO" -ls /live 2>/dev/null | grep -q "vmlinuz" \
+   && xorriso -indev "$ISO" -ls /live 2>/dev/null | grep -q "initrd" \
+   && xorriso -indev "$ISO" -ls /live 2>/dev/null | grep -q "filesystem.squashfs"'
 
 check "metadata records a version" 'grep -q "\"version\"" "$BUILD_DIR/build-metadata.json"'
 

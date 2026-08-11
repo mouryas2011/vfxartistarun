@@ -43,7 +43,7 @@ qemu: build
 	./scripts/run-qemu.sh --iso $(ISO)
 
 qemu-serial: build
-	./scripts/run-qemu.sh --iso $(ISO) --headless
+	./scripts/run-qemu.sh --iso $(ISO) --headless --timeout 420
 
 clean:
 	rm -rf $(BUILD_DIR)
