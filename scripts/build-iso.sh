@@ -95,7 +95,7 @@ ExecStart=/usr/sbin/nexora-bootmark.sh
 WantedBy=sysinit.target
 EOF
 
-$SUDO chroot "$CHROOT" /bin/bash -euxc '
+$SUDO chroot "$CHROOT" /usr/bin/env VERSION="$VERSION" /bin/bash -euxc '
 systemctl enable nexora-boot.service
 echo nexora > /etc/hostname
 printf "NEXORA dev image %s\n" "$VERSION" > /etc/nexora-version
