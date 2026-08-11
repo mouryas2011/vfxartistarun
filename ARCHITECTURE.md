@@ -89,10 +89,11 @@ NEXORA UI / AI / Apps
 
 | Concern | Technology | Status |
 |---------|-----------|--------|
-| Kernel | Linux | PARTIAL — Phase 1 |
-| Boot | UEFI | PARTIAL — Phase 1 |
-| Bootloader | GRUB or systemd-boot (TBD by engineering) | PARTIAL — Phase 1 |
-| Init system | systemd | PARTIAL — Phase 1 |
+| Kernel | Linux | DONE — Phase 1 (CI-green) |
+| Boot | UEFI | DONE — Phase 1 (CI-green) |
+| Bootloader | GRUB | DONE — Phase 1 (CI-green) |
+| Init system | systemd | DONE — Phase 1 (CI-green) |
+| Installer | GPT + ext4 root + FAT32 ESP + GRUB EFI (see `scripts/install-system.sh`) | DONE — Phase 2 (CI-green, QEMU only) |
 | Graphics | Wayland compositor | NOT IMPLEMENTED — Phase 2 |
 | Audio | PipeWire | NOT IMPLEMENTED |
 | Graphics stack | Mesa + Vulkan | NOT IMPLEMENTED |
@@ -100,7 +101,7 @@ NEXORA UI / AI / Apps
 | Virtualization | KVM + QEMU | NOT IMPLEMENTED — Phase 11 |
 | Windows compatibility | Wine / Proton | NOT IMPLEMENTED — Phase 10 |
 | Containers | OCI-compatible | NOT IMPLEMENTED |
-| Filesystem | BTRFS (snapshots/rollback) | PARTIAL — Phase 1 |
+| Filesystem | ext4 root (dev image); BTRFS evaluated for later phases | DONE — Phase 1 |
 
 NEXORA's differentiation lives **above** the Linux foundation.
 

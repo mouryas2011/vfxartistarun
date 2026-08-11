@@ -17,6 +17,7 @@ tests pass (§77).
 | Lint | shell scripts (`shellcheck`), config validation, formatting | `make lint` |
 | Integration | image assembly, rootfs, boot config consistency | `make test` / `make integration` |
 | QEMU boot | UEFI boot of the produced ISO in QEMU; PASS = reaching login/init target and emitting logs | `make qemu` / `make qemu-serial` |
+| Installer gate | real install to a scratch disk + boot of the installed system under UEFI; PASS = `NEXORA INSTALL OK` then `NEXORA_BOOT_MARKER` | `make qemu-install` |
 | Hardware | real-hardware boot matrix (maintained in `COMPATIBILITY.md`) | manual, documented |
 
 ## Required coverage areas (§78)
@@ -48,10 +49,11 @@ or CI; QEMU itself is not installed on the reference dev host — see BUILD.md).
 ## CI pipeline (§81)
 
 `git push` → lint → unit tests → security checks → integration tests →
-build → ISO generation → QEMU boot test → artifacts (`.github/workflows/ci.yml`).
+build → ISO generation → QEMU boot test → installer gate → artifacts
+(`.github/workflows/ci.yml`).
 
 Generated artifacts: ISO, SHA256 checksum, build metadata, SBOM where
-practical.
+practical, QEMU serial logs, installer gate logs.
 
 ## Passing a phase gate
 
